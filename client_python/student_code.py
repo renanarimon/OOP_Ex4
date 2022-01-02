@@ -49,11 +49,8 @@ pokemonList = game.pokemons
 
 agentList = game.agents
 
-
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
 
-print("graph: ",graph)
-print("graph.nodes: ",graph.nodes.values())
 min_x = float(min(list(graph.nodes.values()), key=lambda node: node.pos[0]).pos[0])
 min_y = float(min(list(graph.nodes.values()), key=lambda node: node.pos[1]).pos[1])
 max_x = float(max(list(graph.nodes.values()), key=lambda node: node.pos[0]).pos[0])
@@ -94,6 +91,7 @@ The GUI and the "algo" are mixed - refactoring using MVC design pattern is requi
 
 
 def drawNode(n1: Node):
+    # n = graph.nodes.get(n1)
     x = gui_scale(float(n1.pos[0]), x=True)
     y = gui_scale(float(n1.pos[1]), y=True)
     gfxdraw.filled_circle(screen, int(x), int(y),
@@ -116,17 +114,20 @@ def drawOneEdge(src: Node, dest: Node, color: Color):
 
 
 while client.is_running() == 'true':
-    pokemonList = game.load_pokemon(client.get_pokemons())
-    for p in pokemonList:
+    game.load_pokemon(client.get_pokemons())
+    # pokemonList = game.pokemons
+    for p in game.pokemons:
         x, y, _ = p.pos
-        p.pos[0] = gui_scale(float(x), x=True)
-        p.pos[1] = gui_scale(float(y), y=True)
+        x = gui_scale(float(x), x=True)
+        y = gui_scale(float(y), y=True)
+        p.pos = (x, y, 0.0)
 
-    agentList = game.load_agents(client.get_agents())
-    for a in agentList:
+    game.load_agents(client.get_agents())
+    for a in game.agents:
         x, y, _ = a.pos
-        a.pos[0] = gui_scale(float(x), x=True)
-        a.pos[1] = gui_scale(float(y), y=True)
+        x = gui_scale(float(x), x=True)
+        y = gui_scale(float(y), y=True)
+        a.pos = (x, y, 0.0)
     # check events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -137,20 +138,19 @@ while client.is_running() == 'true':
     screen.fill(gray)
 
     # draw nodes
-    for n in graph.nodes:
+    for n in graph.nodes.values():
         drawNode(n)
-        for e in graph.all_out_edges_of_node(n):
+        for e in graph.all_out_edges_of_node(n.id):
             dest = graph.nodes.get(e)
-            drawOneEdge(n,dest, Color(21, 239, 246))
-
+            drawOneEdge(n, dest, Color(21, 239, 246))
 
     # draw agents
     for agent in agentList:
-        pygame.draw.circle(screen, Color(122, 61, 23),
-                           (int(agent.pos.x), int(agent.pos.y)), 10)
+        pygame.draw.circle(screen, color=Color(122, 61, 23), center=(agent.pos[0], agent.pos[1]), radius=10)
+
     # draw pokemons (note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
     for p in pokemonList:
-        pygame.draw.circle(screen, Color(0, 255, 255), (int(p.pos.x), int(p.pos.y)), 10)
+        pygame.draw.circle(screen,color= Color(0, 255, 255),center=(p.pos[0], p.pos[1]), radius=10)
 
     # update screen changes
     display.update()
@@ -161,7 +161,7 @@ while client.is_running() == 'true':
     # choose next edge
     for agent in agentList:
         if agent.dest == -1:
-            next_node = (agent.src - 1) % len(graph.Nodes)
+            next_node = (agent.src - 1) % len(graph.nodes)
             client.choose_next_edge(
                 '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
             ttl = client.time_to_end()
