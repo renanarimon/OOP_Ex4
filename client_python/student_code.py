@@ -159,9 +159,16 @@ while client.is_running() == 'true':
     clock.tick(60)
 
     # choose next edge
-    for agent in agentList:
+    min_sp
+    for agent in game.agents:
+        for pok in game.pokemons:
+            sp = algoGraph.shortest_path(agent.id, pok.id)
+
+
+
         if agent.dest == -1:
             next_node = (agent.src - 1) % len(graph.nodes)
+            print("src: ", agent.src, "len: ", len(graph.nodes), "next: ", next_node)
             client.choose_next_edge(
                 '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
             ttl = client.time_to_end()
