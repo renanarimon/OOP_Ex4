@@ -114,7 +114,7 @@ def drawNode(n1: Node):
                           r, black)
     gfxdraw.aacircle(screen, int(x), int(y),
                      r, Color(255, 255, 102))
-    font = pygame.font.SysFont('chalkduster.ttf', 20)
+    font = pygame.font.SysFont('chalkduster.ttf', 30)
     # img = font.render('hello', True, BLUE)
     id_srf = font.render(str(n.id), True, black)
     rect = id_srf.get_rect(topright=(x, y))
@@ -163,8 +163,8 @@ while client.is_running() == 'true':
     screen.blit(pygame.transform.scale(fake_screen, screen.get_rect().size), (0, 0))
     manager.draw_ui(screen)
     # rec = pygame.draw.rect(screen,gray ,[0, 0,150,100], width=0)
-    font = pygame.font.SysFont('chalkduster.ttf', 100)
-    cl = font.render(client.time_to_end(), True, black)
+    font1 = pygame.font.SysFont("comicsansms", 72)
+    cl = font1.render(client.time_to_end(), True, black)
     # rect = cl.get_rect(topright=(x, y))
     screen.blit(cl, (0,0))
 
