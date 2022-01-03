@@ -99,7 +99,8 @@ class Game:
 
                 if abs(distPokDest + distSrcPok) - sys.float_info.epsilon <= distSrcDest <= abs(
                         distPokDest + distSrcPok) + sys.float_info.epsilon:
-                    if type_p > 0 and src < dest or src > dest and type_p < 0:
+                    print('src:' , src, 'dest: ', dest , 'type: ', type_p)
+                    if (type_p > 0 and src.id < dest.id) or (src.id > dest.id and type_p < 0):
                         return src, dest
                     else:
                         return dest, src
@@ -201,3 +202,26 @@ class Game:
             else:
                 return None
         return ans, weight
+
+
+    def shortest_path(self, id1: int, id2: int) -> (float, list):
+        self.dijkstra(id1, id2)
+        weightAns = self.pokGraph.nodes[id2].weight
+        listAns = []
+        curr = id2
+        listAns, weight = self.findParentPath(curr, weightAns, listAns)
+        if weightAns != math.inf:
+            listAns.append(id1)
+            listAns.reverse()
+        return weightAns, listAns
+
+    def threeShortestPath(self, id1: int, id2: int, id3: int) -> (float, list):
+        w, ans = self.shortest_path(id1, id2)
+        w1, ans1 = self.shortest_path(id2, id3)
+        ans1.pop(0)
+        w += w1
+        ans.extend(ans1)
+        return w, ans
+
+
+

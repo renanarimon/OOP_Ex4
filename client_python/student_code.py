@@ -77,8 +77,12 @@ def gui_scale(data, x=False, y=False):
 
 
 r = 15
-
-client.add_agent("{\"id\":0}")
+for i in range(game.numOfAgent):
+    st = "{id:"
+    st += str(i)
+    st += "}"
+    client.add_agent(st)
+# client.add_agent("{\"id\":0}")
 # client.add_agent("{\"id\":1}")
 # client.add_agent("{\"id\":2}")
 # client.add_agent("{\"id\":3}")
@@ -117,7 +121,6 @@ def drawOneEdge(src: Node, dest: Node, color: Color):
 while client.is_running() == 'true':
     # if game.numOfPokemons > len(game.pokemons):
     game.load_pokemon(client.get_pokemons())
-    print([p.pos for p in game.pokemons])
     for p in game.pokemons:
         x, y, _ = p.pos
         x = gui_scale(float(x), x=True)
@@ -172,19 +175,27 @@ while client.is_running() == 'true':
                 if not pok.took:
                     src1, dest1 = game.findEdge(graph, pok.pos, pok.type)
                     agent.lastDest = dest1.id
-                    # print("src1, dest1:",src1, dest1)
+                    print("src1, dest1:", src1, dest1)
                     # print([agent.src, src1.id, dest1.id])
                     if agent.src == src1.id:
-                        l = [src1.id, dest1.id]
+                        w, lst = game.shortest_path(src1.id, dest1.id)
+                        # l = [src1.id, dest1.id]
                     elif agent.src == dest1.id:
                         lst = [src1.id, dest1.id]
                         bestPok = pok
                         agent.orderList = lst
+                        # print("lst elif:",lst)
                         break
                     else:
-                        l = [agent.src, src1.id, dest1.id]
-                    lst, w = game.TSP(l)
+                        w, lst = game.threeShortestPath(agent.src, src1.id, dest1.id)
+                        # l = [agent.src, src1.id, dest1.id]
+
+                    # print("l: ",l)
+
+                    # lst, w = game.TSP(l)
+                    # print("tsp: ", lst)
                     lst.pop(0)
+                    # print("after pop: ", lst)
                     if (pok.value - w) > v:
                         v = pok.value - w
                         bestPok = pok
@@ -196,28 +207,13 @@ while client.is_running() == 'true':
     for agent in game.agents:
         if agent.dest == -1:
             # if len(agent.orderList)>0:
+            print(agent.orderList)
             nextNode = agent.orderList.pop(0)
+
             # print('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
             client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
             ttl = client.time_to_end()
-            print(ttl, client.get_info())
+            # print(ttl, client.get_info())
         client.move()
-
-    # for agent in game.agents:
-    #     lst = [p.id for p in game.pokemons]
-    #     lst.insert(0, agent.src)
-    #     print(lst)
-    #     nextOrder = game.TSP(lst)
-    #     for n in game.pokemons:
-    #         nextOrder.remove(n.id)
-    #     nextOrder.append(game.currDest)
-    #     print("nextOrder: ", nextOrder)
-    #     while len(nextOrder) > 0:
-    #         if agent.dest == -1:
-    #             nextNode = nextOrder.pop(0)
-    #             print("nextNode: ", nextNode)
-    #             client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
-    #             ttl = client.time_to_end()
-    #     client.move()
 
 # game over:

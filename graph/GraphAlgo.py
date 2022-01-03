@@ -555,3 +555,11 @@ class GraphAlgo(GraphAlgoInterface):
             pygame.display.update()
 
             clock.tick(60)
+
+if __name__ == '__main__':
+    g_algo = GraphAlgo()
+    file = '../data/A0'
+    g_algo.load_from_json(file)
+    # g_algo.plot_graph()
+    x = g_algo.TSP([5,0,1])
+    print(x)
