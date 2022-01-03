@@ -162,8 +162,11 @@ while client.is_running() == 'true':
     fake_screen.blit(bg, (0,0))
     screen.blit(pygame.transform.scale(fake_screen, screen.get_rect().size), (0, 0))
     manager.draw_ui(screen)
-    rect = pygame.draw.rect(screen, gray, [0, 0,150,100], 0)
-
+    # rec = pygame.draw.rect(screen,gray ,[0, 0,150,100], width=0)
+    font = pygame.font.SysFont('chalkduster.ttf', 100)
+    cl = font.render(client.time_to_end(), True, black)
+    # rect = cl.get_rect(topright=(x, y))
+    screen.blit(cl, (0,0))
 
 
     # draw nodes
