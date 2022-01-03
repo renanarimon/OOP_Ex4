@@ -1,3 +1,6 @@
+import pygame
+
+
 class Agent:
     def __init__(self, id1: int, value: float, src: int, dest: int, speed: float, pos: tuple):
         self.id = id1
@@ -8,6 +11,6 @@ class Agent:
         self.pos = pos
         self.orderList = []
         self.lastDest = 0
-
+        self.image = pygame.image.load('../images/Pokeball.png')
 
 

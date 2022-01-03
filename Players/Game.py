@@ -58,8 +58,8 @@ class Game:
                     flag1 = False
                     break
             if flag1:
-                if len(self.pokemons) > 0:
-                    self.pokemons.pop(0)
+                # if len(self.pokemons) > 0:
+                #     self.pokemons.pop(0)
                 pokemon = Pokemon(pok['value'], pok['type'], pos, ++self.size)
                 self.pokemons.append(pokemon)
 
