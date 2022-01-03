@@ -94,13 +94,13 @@ class DiGraph(GraphInterface):
     Note: if the node id already exists the node will not be added
     """
 
-    def add_node(self, node_id: int, pos: tuple = None) -> bool:
+    def add_node(self, node_id: int, pos: tuple = None, val: float = 0.0) -> bool:
         if node_id not in self.nodes:
             if pos is None:
                 x = random.uniform(35.19, 35.22)
                 y = random.uniform(32.05, 32.22)
                 pos = (x, y, 0.0)
-            newOne = Node(node_id, pos)
+            newOne = Node(node_id, pos, val)
             self.nodes[node_id] = newOne
             self.children[node_id] = {}
             self.parents[node_id] = {}
@@ -174,12 +174,13 @@ class DiGraph(GraphInterface):
 class Node:
     """ This abstract class represents a Node in the graph"""
 
-    def __init__(self, id1: int, pos: tuple = None):
+    def __init__(self, id1: int, pos: tuple = None, val: float = 0.0):
         self.pos = pos
         self.id = id1
         self.father = None
         self.weight = math.inf
         self.visited = 0
+        self.value = val
 
     """ compare between 2 nodes by weight
     """

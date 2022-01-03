@@ -3,6 +3,7 @@
 OOP - Ex4
 Very simple GUI example for python client to communicates with the server and "play the game!"
 """
+import sys
 from types import SimpleNamespace
 
 from Players.Game import Game
@@ -42,12 +43,13 @@ algoGraph = GraphAlgo()
 algoGraph.load_from_json(client.get_graph())
 game = Game(client.get_info())
 graph = game.algoGraph.graph
+# copyGraph = algoGraph.copy()
 
-pokemon_json = client.get_pokemons()
-pokemons_obj = game.load_pokemon(pokemon_json)
-pokemonList = game.pokemons
-
-agentList = game.agents
+# pokemon_json = client.get_pokemons()
+# pokemons_obj = game.load_pokemon(pokemon_json)
+#
+# pokemonList = game.pokemons
+# agentList = game.agents
 
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
 
@@ -91,7 +93,6 @@ The GUI and the "algo" are mixed - refactoring using MVC design pattern is requi
 
 
 def drawNode(n1: Node):
-    # n = graph.nodes.get(n1)
     x = gui_scale(float(n1.pos[0]), x=True)
     y = gui_scale(float(n1.pos[1]), y=True)
     gfxdraw.filled_circle(screen, int(x), int(y),
@@ -114,13 +115,14 @@ def drawOneEdge(src: Node, dest: Node, color: Color):
 
 
 while client.is_running() == 'true':
+    # if game.numOfPokemons > len(game.pokemons):
     game.load_pokemon(client.get_pokemons())
-    # pokemonList = game.pokemons
+    print([p.pos for p in game.pokemons])
     for p in game.pokemons:
         x, y, _ = p.pos
         x = gui_scale(float(x), x=True)
         y = gui_scale(float(y), y=True)
-        p.pos = (x, y, 0.0)
+        p.posScale = (x, y, 0.0)
 
     game.load_agents(client.get_agents())
     for a in game.agents:
@@ -145,12 +147,14 @@ while client.is_running() == 'true':
             drawOneEdge(n, dest, Color(21, 239, 246))
 
     # draw agents
-    for agent in agentList:
+    for agent in game.agents:
         pygame.draw.circle(screen, color=Color(122, 61, 23), center=(agent.pos[0], agent.pos[1]), radius=10)
 
     # draw pokemons (note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
-    for p in pokemonList:
-        pygame.draw.circle(screen,color= Color(0, 255, 255),center=(p.pos[0], p.pos[1]), radius=10)
+    # print("draw pok in pos :")
+    for p in game.pokemons:
+        # print(p.pos)
+        pygame.draw.circle(screen, color=Color(0, 255, 255), center=(p.posScale[0], p.posScale[1]), radius=10)
 
     # update screen changes
     display.update()
@@ -158,21 +162,62 @@ while client.is_running() == 'true':
     # refresh rate
     clock.tick(60)
 
-    # choose next edge
-    min_sp
     for agent in game.agents:
-        for pok in game.pokemons:
-            sp = algoGraph.shortest_path(agent.id, pok.id)
+        # print("****",agent.src , agent.lastDest)
+        if agent.src == agent.lastDest:
+            # print("inside")
+            v = -sys.maxsize
+            bestPok = Pokemon(0.0, 0, (0.0, 0.0, 0.0), 0)
+            for pok in game.pokemons:
+                if not pok.took:
+                    src1, dest1 = game.findEdge(graph, pok.pos, pok.type)
+                    agent.lastDest = dest1.id
+                    # print("src1, dest1:",src1, dest1)
+                    # print([agent.src, src1.id, dest1.id])
+                    if agent.src == src1.id:
+                        l = [src1.id, dest1.id]
+                    elif agent.src == dest1.id:
+                        lst = [src1.id, dest1.id]
+                        bestPok = pok
+                        agent.orderList = lst
+                        break
+                    else:
+                        l = [agent.src, src1.id, dest1.id]
+                    lst, w = game.TSP(l)
+                    lst.pop(0)
+                    if (pok.value - w) > v:
+                        v = pok.value - w
+                        bestPok = pok
+                        agent.orderList = lst
+                # else:
+            # game.pokemons.remove(bestPok)
+            bestPok.took = True
 
-
-
+    for agent in game.agents:
         if agent.dest == -1:
-            next_node = (agent.src - 1) % len(graph.nodes)
-            print("src: ", agent.src, "len: ", len(graph.nodes), "next: ", next_node)
-            client.choose_next_edge(
-                '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+            # if len(agent.orderList)>0:
+            nextNode = agent.orderList.pop(0)
+            # print('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
+            client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
             ttl = client.time_to_end()
             print(ttl, client.get_info())
+        client.move()
 
-    client.move()
+    # for agent in game.agents:
+    #     lst = [p.id for p in game.pokemons]
+    #     lst.insert(0, agent.src)
+    #     print(lst)
+    #     nextOrder = game.TSP(lst)
+    #     for n in game.pokemons:
+    #         nextOrder.remove(n.id)
+    #     nextOrder.append(game.currDest)
+    #     print("nextOrder: ", nextOrder)
+    #     while len(nextOrder) > 0:
+    #         if agent.dest == -1:
+    #             nextNode = nextOrder.pop(0)
+    #             print("nextNode: ", nextNode)
+    #             client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
+    #             ttl = client.time_to_end()
+    #     client.move()
+
 # game over:
