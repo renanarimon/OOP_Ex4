@@ -13,9 +13,9 @@ In addition each agant has a speed - As much as he will eat more pokemon his spe
  
 ## pakeges: 
 <img width="137" alt="image" src="https://user-images.githubusercontent.com/77111035/148038186-29eb90fa-eba2-4e7c-98fd-bd732066e53e.png">
-#### client:<br />
+### client:
 doesnt written by us, this class activate the server <br />
-#### student_code: <br />
+### student_code:
 the main class contains the GUI, represent the graph, pokemons and agants.<br />
 - Main Functions: <br />
 pickPok2Agent() : this function represents the algorithm of the game and assigns each Agent the best Pokemon according to the following criteria:<br />
