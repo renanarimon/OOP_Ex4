@@ -11,7 +11,7 @@ In addition each agant has a speed - As much as he will eat more pokemon his spe
 
  
 # pakeges: 
-**client**
+## client
 doesnt written by us, this class activate the server 
 ## student_code:
 the main class contains the GUI, represent the graph, pokemons and agants.
@@ -22,7 +22,7 @@ the main class contains the GUI, represent the graph, pokemons and agants.
   ---> We search the maximum value of:  (Pokemon value) - (weight of path) <br />
   The function is Bijection: each Agent has one Pokemon adapted at each iteration and vice versa. <br />
   this algotithm create to each agant a list of node he need to pass in order,the last two nodes are the srs and dest of the pokemon's edge. <br />
-<img width="137" alt="image" src="https://user-images.githubusercontent.com/77111035/148041790-bff44a6b-bd4e-4ee9-ae47-e46911e31bba.png">
+
 ## agant: 
 contains : id, speed, value, src, dest, pos
 ## pokimon: 
@@ -36,7 +36,6 @@ this unction find the shortest path between to nodes on the graph by the Dijkstr
   create a agant and pokemon from Json format <br />
 - findEdge() :<br />
   this tunction finds the src and dest of a given pokemon's edge. calculate distants two point and checking if : (dest pos) =< (pokemin pos) =< (src pos) <br />
-<img width="135" alt="image" src="https://user-images.githubusercontent.com/77111035/148044291-816444c8-5405-438c-b37f-e85bf4780759.png">
 We took the samo implement of : [OOP_Ex3](https://github.com/taliyashitreet/OOP_Ex3)
 # How To Run
 - in the terminal: java -jar Ex4_Server_v0.0.jar 0 (instead of 0 put any level you want to run)
