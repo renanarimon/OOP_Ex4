@@ -7,6 +7,9 @@ In addition each agant has a speed - As much as he will eat more pokemon his spe
 
 ## This assignment was written by
  [Taliya Shitreet](https://github.com/taliyashitreet "Profile") and  [Renana Rimon](https://github.com/renanarimon "Profile")
+ ## Our game look like:
+ ![image](https://user-images.githubusercontent.com/77111035/148042934-cfc27add-ac10-4940-b0cb-f5538182ee53.png)
+
  
  ## pakeges:
  <img width="137" alt="image" src="https://user-images.githubusercontent.com/77111035/148038186-29eb90fa-eba2-4e7c-98fd-bd732066e53e.png">
@@ -23,19 +26,21 @@ The function is Bijection: each Agent has one Pokemon adapted at each iteration 
 this algotithm create to each agant a list of node he need to pass in order,the last two nodes are the srs and dest of the pokemon's edge. <br />
 
 <img width="137" alt="image" src="https://user-images.githubusercontent.com/77111035/148041790-bff44a6b-bd4e-4ee9-ae47-e46911e31bba.png">
-#### agant:
+### agant:
 contains : id, speed, value, src, dest, pos
-#### pokimon:
+### pokimon:
 contains : pos, value, type (If he is on the edge descending or ascending)
-#### Game:
+### Game:
 contains : the all info of the game (load as Json file), has the graph (Digraph)<br />
-- Main function : <br />
-shortestPath(): <br />
+#### Main function : <br />
+- shortestPath(): <br />
 thios unction find the shortest path between to nodes on the graph by the Dijkstra's algorithm <br />
 [Dijkstra](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) <br />
-load_agents() , load_pokemon() :  <br />
+- load_agents() , load_pokemon() :  <br />
 create a agant and pokemon from Json format <br />
-findEdge() :<br />
+- findEdge() :<br />
+this tunction finds the src and dest of a given pokemon's edge. calculate distants two point and checking if : (dest pos) =< (pokemin pos) =< (src pos)
+
 
 
 
