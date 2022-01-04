@@ -12,6 +12,12 @@ from graph.DiGraph import DiGraph
 
 
 class Game:
+    """
+    main class of game algorithms:
+        1. load graph, pokemon, agent
+        2. dijkstra
+        3. shortest path
+    """
 
     def __init__(self, json_str: str):
         self.INFINITY = INFINITY = math.inf
@@ -34,10 +40,8 @@ class Game:
         self.size = self.graph.v_size()
         self.currDest = 0
 
-
     def load_from_json(self, file_name: str) -> bool:
         try:
-            self.file = file_name
             self.graph.__init__()
             with open(file_name, 'r') as file:
                 l = json.load(file)
@@ -61,6 +65,7 @@ class Game:
         except:
             return False
 
+    # load pokemon: if already exists -> NOT load
     def load_pokemon(self, file_name):
         l = json.loads(file_name)
         ListPokemons = l['Pokemons']
@@ -81,6 +86,7 @@ class Game:
                 pokemon = Pokemon(pok['value'], pok['type'], pos, ++self.size)
                 self.pokemons.append(pokemon)
 
+    # load agents: if already exists -> NOT create new -> change needed fields
     def load_agents(self, file_name):
         l = json.loads(file_name)
         ListAgents = l['Agents']
@@ -105,6 +111,10 @@ class Game:
                 self.agents.append(agent)
 
     def findEdge(self, graph: DiGraph, pokPos: tuple, type_p: int):
+        """
+        Finds the edge the Pokemon is on,
+        By calculating distances and by type
+        """
         for src in graph.nodes.values():
             for e in graph.all_out_edges_of_node(src.id):
                 dest = graph.nodes.get(e)
@@ -130,13 +140,14 @@ class Game:
             n.weight = self.INFINITY
             n.visited = 0
 
-    """help function for Dijkstra
-        if adding the edge make the path shorter --> add edge.
-        change the node weight.
-        :param src, dest of edge
-    """
+
 
     def relax(self, src: int, dest: int):
+        """help function for Dijkstra
+            if adding the edge make the path shorter --> add edge.
+            change the node weight.
+            :param src, dest of edge
+        """
         srcNode = self.graph.nodes[src]
         destNode = self.graph.nodes[dest]
         edgeWeight = self.graph.all_out_edges_of_node(src)[dest]
@@ -144,12 +155,13 @@ class Game:
             destNode.weight = srcNode.weight + edgeWeight
             destNode.father = srcNode
 
-    """algorithm to find the shortest paths between nodes in a graph,
-        update each node's weight - the weight of the shortest path from root to self
-        https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
-    """
+
 
     def dijkstra(self, src: int, dest: int):
+        """algorithm to find the shortest paths between nodes in a graph,
+            update each node's weight - the weight of the shortest path from root to self
+            https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+        """
         self.restartNodes()
         root = self.graph.nodes.get(src)
         root.weight = 0
@@ -166,6 +178,10 @@ class Game:
                     pq.put(self.graph.nodes.get(d))
 
     def findParentPath(self, idCurr: int, weight: float, listAdd: list):
+        """
+        :return short path of nodes id from src to dest
+        :return path weight
+        """
         while self.graph.nodes[idCurr].father is not None:
             listAdd.append(idCurr)
             weight += self.graph.nodes[idCurr].father.weight
@@ -173,6 +189,14 @@ class Game:
         return listAdd, weight
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
+        """
+        Computes the shortest path between src to dest - as an ordered List of nodes:
+        src--> n1-->n2-->...dest
+        this function use dijkstra algorithm to find the shortest path
+        if no such path --> returns null
+        :param id1, id2
+        :return list of nodes path
+        """
         self.dijkstra(id1, id2)
         weightAns = self.graph.nodes[id2].weight
         listAns = []
@@ -184,6 +208,10 @@ class Game:
         return weightAns, listAns
 
     def threeShortestPath(self, id1: int, id2: int, id3: int) -> (float, list):
+        """
+        calculate shortest path between 3 nodes
+        @return: weight, path
+        """
         w, ans = self.shortest_path(id1, id2)
         w1, ans1 = self.shortest_path(id2, id3)
         ans1.pop(0)
