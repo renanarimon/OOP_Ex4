@@ -1,18 +1,14 @@
 import json
 import math
-import os.path
 import queue
+import random
 import sys
-from os import path
-from typing import List
+
 import numpy as np
 
-from Players.Agent import Agent
-from Players.Pokimon import Pokemon
-from client_python.client import Client
+from pokemonGame.Agent import Agent
+from pokemonGame.Pokimon import Pokemon
 from graph.DiGraph import DiGraph
-
-from graph.GraphAlgo import GraphAlgo
 
 
 class Game:
@@ -31,17 +27,42 @@ class Game:
         self.id = l['id']
         self.graph_json = l['graph']
         self.numOfAgent = l['agents']
-        self.algoGraph = GraphAlgo()
 
-        self.algoGraph.load_from_json("../" + self.graph_json)
         self.pokemons = []
         self.agents = []
-        self.pokGraph = self.algoGraph.copy()
-        self.size = self.algoGraph.graph.v_size()
+        self.graph = DiGraph()
+        self.load_from_json("../" + self.graph_json)
+        self.size = self.graph.v_size()
         self.currDest = 0
 
+
+    def load_from_json(self, file_name: str) -> bool:
+        try:
+            self.file = file_name
+            self.graph.__init__()
+            with open(file_name, 'r') as file:
+                l = json.load(file)
+                ListNodes = l['Nodes']
+                ListEdges = l['Edges']
+            for n in ListNodes:
+                try:
+                    tmp = n['pos'].split(",")
+                    x = float(tmp[0])
+                    y = float(tmp[1])
+                    pos = (x, y, 0.0)
+                except Exception:
+                    x = random.uniform(35.19, 35.22)
+                    y = random.uniform(32.05, 32.22)
+                    pos = (x, y, 0.0)
+
+                self.graph.add_node(n['id'], pos)
+            for e in ListEdges:
+                self.graph.add_edge(e['src'], e['dest'], e['w'])
+            return True
+        except:
+            return False
+
     def load_pokemon(self, file_name):
-        self.pokGraph = self.algoGraph.copy()
         l = json.loads(file_name)
         ListPokemons = l['Pokemons']
         self.pokemons.clear()
@@ -58,8 +79,6 @@ class Game:
                     flag1 = False
                     break
             if flag1:
-                # if len(self.pokemons) > 0:
-                #     self.pokemons.pop(0)
                 pokemon = Pokemon(pok['value'], pok['type'], pos, ++self.size)
                 self.pokemons.append(pokemon)
 
@@ -105,23 +124,9 @@ class Game:
                     else:
                         return dest, src
 
-    #
-    # def reEdge(self, pokemon: Pokemon):
-    #     pos = pokemon.pos
-    #     id = pokemon.id
-    #     self.pokGraph.add_node(id, pos)
-    #     src, dest = self.findEdge(pos, pokemon.type)
-    #     self.currDest = dest.id
-    #
-    #     edgeWeight = self.pokGraph.all_out_edges_of_node(src.id)[dest.id]
-    #     newWeight = edgeWeight / 2.0
-    #
-    #     self.pokGraph.remove_edge(src.id, dest.id)
-    #     self.pokGraph.add_edge(src.id, id, newWeight)
-    #     self.pokGraph.add_edge(id, dest.id, newWeight)
 
     def restartNodes(self):
-        for n in self.pokGraph.nodes.values():
+        for n in self.graph.nodes.values():
             n.father = None
             n.weight = self.INFINITY
             n.visited = 0
@@ -133,9 +138,9 @@ class Game:
     """
 
     def relax(self, src: int, dest: int):
-        srcNode = self.pokGraph.nodes[src]
-        destNode = self.pokGraph.nodes[dest]
-        edgeWeight = self.pokGraph.all_out_edges_of_node(src)[dest]
+        srcNode = self.graph.nodes[src]
+        destNode = self.graph.nodes[dest]
+        edgeWeight = self.graph.all_out_edges_of_node(src)[dest]
         if destNode.weight > srcNode.weight + edgeWeight:
             destNode.weight = srcNode.weight + edgeWeight
             destNode.father = srcNode
@@ -147,7 +152,7 @@ class Game:
 
     def dijkstra(self, src: int, dest: int):
         self.restartNodes()
-        root = self.pokGraph.nodes.get(src)
+        root = self.graph.nodes.get(src)
         root.weight = 0
         pq = queue.PriorityQueue()
         pq.put(root)
@@ -157,56 +162,20 @@ class Game:
                 if curr.id == dest:
                     return
                 curr.visited = 1
-                for d in self.pokGraph.all_out_edges_of_node(curr.id):
+                for d in self.graph.all_out_edges_of_node(curr.id):
                     self.relax(curr.id, d)
-                    pq.put(self.pokGraph.nodes.get(d))
+                    pq.put(self.graph.nodes.get(d))
 
     def findParentPath(self, idCurr: int, weight: float, listAdd: list):
-        while self.pokGraph.nodes[idCurr].father is not None:
+        while self.graph.nodes[idCurr].father is not None:
             listAdd.append(idCurr)
-            weight += self.pokGraph.nodes[idCurr].father.weight
-            idCurr = self.pokGraph.nodes[idCurr].father.id
+            weight += self.graph.nodes[idCurr].father.weight
+            idCurr = self.graph.nodes[idCurr].father.id
         return listAdd, weight
-
-    def minShortPath(self, node_id: int, node_lst: List[int]) -> (int, list, float):
-        self.dijkstra(node_id, -1)
-        minW = sys.maxsize
-        ans = 0
-        path = []
-        for i in node_lst:
-            if self.pokGraph.nodes[i].weight < minW:
-                minW = self.pokGraph.nodes[i].weight
-                ans = i
-        last = ans
-        pathWeight = self.pokGraph.nodes[last].weight
-        path, weight = self.findParentPath(last, pathWeight, path)
-        path.append(node_id)
-        path.reverse()
-        return ans, path, pathWeight
-
-    def TSP(self, node_lst: List[int]) -> (List[int], float):
-        ans = []
-        currNode = node_lst.pop(0)
-        ans.append(currNode)
-        bestNode = 0
-        weight = 0
-        while len(node_lst) > 0:
-            put = []
-            bestNode, put, tmp_wei = self.minShortPath(currNode, node_lst)
-            if bestNode != currNode:
-                weight += tmp_wei
-                put.pop(0)
-                ans = ans + put
-                node_lst.remove(bestNode)
-                currNode = bestNode
-            else:
-                return None
-        return ans, weight
-
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         self.dijkstra(id1, id2)
-        weightAns = self.pokGraph.nodes[id2].weight
+        weightAns = self.graph.nodes[id2].weight
         listAns = []
         curr = id2
         listAns, weight = self.findParentPath(curr, weightAns, listAns)

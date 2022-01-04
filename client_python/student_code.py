@@ -4,63 +4,50 @@ OOP - Ex4
 Very simple GUI example for python client to communicates with the server and "play the game!"
 """
 import sys
-from types import SimpleNamespace
-
 import pygame_gui
 
-from Players.Game import Game
-from Players.Pokimon import Pokemon
-from graph.GraphAlgo import GraphAlgo
+from pokemonGame.Game import Game
+from pokemonGame.Pokimon import Pokemon
 from graph.DiGraph import DiGraph, Node
 from client import Client
-import data
-import json
 from pygame import gfxdraw
 import pygame
 from pygame import *
 
 # init pygame
 
-
 WIDTH, HEIGHT = 1080, 720
 gray = Color(64, 64, 64)
 blue = Color(6, 187, 193)
 yellow = Color(255, 255, 102)
-black = (0, 0, 0)
-white = (255, 255, 255)
+black = Color(0, 0, 0)
+white = Color(255, 255, 255)
+r = 5
 # default port
 PORT = 6666
 # server host (default localhost 127.0.0.1)
 HOST = '127.0.0.1'
 pygame.init()
 bg = pygame.image.load("../images/backgruond.jpg")
-screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=HWSURFACE|DOUBLEBUF|RESIZABLE)
+screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=HWSURFACE | DOUBLEBUF | RESIZABLE)
 fake_screen = screen.copy()
 background = pygame.Surface((WIDTH, HEIGHT), depth=32, flags=RESIZABLE)
-# background.blit(bg, (0,0), special_flags=RESIZABLE)
-# background.fill(bg)
+
 clock = pygame.time.Clock()
 pygame.font.init()
 
 client = Client()
 client.start_connection(HOST, PORT)
 
-algoGraph = GraphAlgo()
-algoGraph.load_from_json(client.get_graph())
 game = Game(client.get_info())
-graph = game.algoGraph.graph
-# copyGraph = algoGraph.copy()
+graph = game.graph
 
-# pokemon_json = client.get_pokemons()
-# pokemons_obj = game.load_pokemon(pokemon_json)
-#
-# pokemonList = game.pokemons
-# agentList = game.agents
-
-FONT = pygame.font.SysFont('Arial', 20, bold=True)
+# FONT = pygame.font.SysFont('Arial', 20, bold=True)
+fontTimer = pygame.font.SysFont("comicsansms", 72)
+fontNodeId = pygame.font.SysFont('chalkduster.ttf', 30)
 
 manager = pygame_gui.UIManager((WIDTH, HEIGHT))
-btnStop = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen.get_width()-100, 0), (115, 40)),
+btnStop = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen.get_width() - 100, 0), (115, 40)),
                                        text='STOP GAME',
                                        manager=manager)
 
@@ -87,23 +74,21 @@ def gui_scale(data, x=False, y=False):
         return scale(data, 50, screen.get_height() - 50, min_y, max_y)
 
 
-r = 5
+# add agents
+
 for i in range(game.numOfAgent):
     st = "{id:"
     st += str(i)
     st += "}"
     client.add_agent(st)
-# client.add_agent("{\"id\":0}")
-# client.add_agent("{\"id\":1}")
-# client.add_agent("{\"id\":2}")
-# client.add_agent("{\"id\":3}")
 
 # this commnad starts the server - the game is running now
 client.start()
 
 """
-The code below should be improved significantly:
-The GUI and the "algo" are mixed - refactoring using MVC design pattern is required.
+gui functions to draw graph:
+    1. drawNode
+    2. drawOneEdge
 """
 
 
@@ -114,10 +99,8 @@ def drawNode(n1: Node):
                           r, black)
     gfxdraw.aacircle(screen, int(x), int(y),
                      r, Color(255, 255, 102))
-    font = pygame.font.SysFont('chalkduster.ttf', 30)
-    # img = font.render('hello', True, BLUE)
-    id_srf = font.render(str(n.id), True, black)
-    rect = id_srf.get_rect(topright=(x, y))
+    id_srf = fontNodeId.render(str(n.id), True, black)
+    rect = id_srf.get_rect(topright=(x - 10, y - 10))
     screen.blit(id_srf, rect)
 
 
@@ -129,9 +112,16 @@ def drawOneEdge(src: Node, dest: Node, color: Color):
     pygame.draw.line(screen, color, (src_x, src_y), (dest_x, dest_y))
 
 
+"""
+while game is running:
+    1. load & scale pokemons
+    2. load & scale agents
+"""
+
 while client.is_running() == 'true':
     time_delta = clock.tick(60) / 1000.0
-    # if game.numOfPokemons > len(game.pokemons):
+
+    # load & scale pokemons
     game.load_pokemon(client.get_pokemons())
     for p in game.pokemons:
         x, y, _ = p.pos
@@ -139,12 +129,14 @@ while client.is_running() == 'true':
         y = gui_scale(float(y), y=True)
         p.posScale = (x, y, 0.0)
 
+    # load & scale agents
     game.load_agents(client.get_agents())
     for a in game.agents:
         x, y, _ = a.pos
         x = gui_scale(float(x), x=True)
         y = gui_scale(float(y), y=True)
         a.pos = (x, y, 0.0)
+
     # check events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -159,15 +151,11 @@ while client.is_running() == 'true':
         manager.process_events(event)
     manager.update(time_delta)
     fake_screen.fill('black')
-    fake_screen.blit(bg, (0,0))
+    fake_screen.blit(bg, (0, 0))
     screen.blit(pygame.transform.scale(fake_screen, screen.get_rect().size), (0, 0))
     manager.draw_ui(screen)
-    # rec = pygame.draw.rect(screen,gray ,[0, 0,150,100], width=0)
-    font1 = pygame.font.SysFont("comicsansms", 72)
-    cl = font1.render(client.time_to_end(), True, black)
-    # rect = cl.get_rect(topright=(x, y))
-    screen.blit(cl, (0,0))
-
+    timer = fontTimer.render(client.time_to_end(), True, black)
+    screen.blit(timer, (0, 0))
 
     # draw nodes
     for n in graph.nodes.values():
