@@ -127,20 +127,17 @@ class Game:
 
                 if abs(distPokDest + distSrcPok) - sys.float_info.epsilon <= distSrcDest <= abs(
                         distPokDest + distSrcPok) + sys.float_info.epsilon:
-                    print('src:' , src, 'dest: ', dest , 'type: ', type_p)
+                    print('src:', src, 'dest: ', dest, 'type: ', type_p)
                     if (type_p > 0 and src.id < dest.id) or (src.id > dest.id and type_p < 0):
                         return src, dest
                     else:
                         return dest, src
-
 
     def restartNodes(self):
         for n in self.graph.nodes.values():
             n.father = None
             n.weight = self.INFINITY
             n.visited = 0
-
-
 
     def relax(self, src: int, dest: int):
         """help function for Dijkstra
@@ -154,8 +151,6 @@ class Game:
         if destNode.weight > srcNode.weight + edgeWeight:
             destNode.weight = srcNode.weight + edgeWeight
             destNode.father = srcNode
-
-
 
     def dijkstra(self, src: int, dest: int):
         """algorithm to find the shortest paths between nodes in a graph,
@@ -218,6 +213,3 @@ class Game:
         w += w1
         ans.extend(ans1)
         return w, ans
-
-
-
