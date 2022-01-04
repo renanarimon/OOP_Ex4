@@ -20,7 +20,7 @@ class Game:
     """
 
     def __init__(self, json_str: str):
-        self.INFINITY = INFINITY = math.inf
+        self.INFINITY = math.inf
         l = json.loads(json_str)['GameServer']
 
         self.numOfPokemons = l['pokemons']
@@ -39,6 +39,7 @@ class Game:
         self.load_from_json("../" + self.graph_json)
         self.size = self.graph.v_size()
         self.currDest = 0
+        self.score=0
 
     def load_from_json(self, file_name: str) -> bool:
         try:
@@ -67,48 +68,57 @@ class Game:
 
     # load pokemon: if already exists -> NOT load
     def load_pokemon(self, file_name):
-        l = json.loads(file_name)
-        ListPokemons = l['Pokemons']
-        self.pokemons.clear()
-        for p in ListPokemons:
-            pok = p['Pokemon']
-            tmp = pok['pos'].split(",")
-            x = float(tmp[0])
-            y = float(tmp[1])
-            pos = (x, y, 0.0)
-            flag1 = True
+        try:
+            l = json.loads(file_name)
+            ListPokemons = l['Pokemons']
+            self.pokemons.clear()
+            for p in ListPokemons:
+                pok = p['Pokemon']
+                tmp = pok['pos'].split(",")
+                x = float(tmp[0])
+                y = float(tmp[1])
+                pos = (x, y, 0.0)
+                flag1 = True
 
-            for p1 in self.pokemons:
-                if all(x == y for x, y in zip(pos, p1.pos)):
-                    flag1 = False
-                    break
-            if flag1:
-                pokemon = Pokemon(pok['value'], pok['type'], pos, ++self.size)
-                self.pokemons.append(pokemon)
+                for p1 in self.pokemons:
+                    if all(x == y for x, y in zip(pos, p1.pos)):
+                        flag1 = False
+                        break
+                if flag1:
+                    pokemon = Pokemon(pok['value'], pok['type'], pos, ++self.size)
+                    self.pokemons.append(pokemon)
+            return True
+        except:
+            return False
 
     # load agents: if already exists -> NOT create new -> change needed fields
     def load_agents(self, file_name):
-        l = json.loads(file_name)
-        ListAgents = l['Agents']
-        for a in ListAgents:
-            ag = a['Agent']
-            tmp = ag['pos'].split(",")
-            x = float(tmp[0])
-            y = float(tmp[1])
-            pos = (x, y, 0.0)
-            flag = True
-            for n in self.agents:
-                if n.id == ag['id']:
-                    n.value = ag['value']
-                    n.src = ag['src']
-                    n.dest = ag['dest']
-                    n.speed = ag['speed']
-                    n.pos = pos
-                    flag = False
-                    break
-            if flag:
-                agent = Agent(ag['id'], ag['value'], ag['src'], ag['dest'], ag['speed'], pos)
-                self.agents.append(agent)
+        try:
+            l = json.loads(file_name)
+            # print(l)
+            ListAgents = l['Agents']
+            for a in ListAgents:
+                ag = a['Agent']
+                tmp = ag['pos'].split(",")
+                x = float(tmp[0])
+                y = float(tmp[1])
+                pos = (x, y, 0.0)
+                flag = True
+                for n in self.agents:
+                    if n.id == ag['id']:
+                        n.value = ag['value']
+                        n.src = ag['src']
+                        n.dest = ag['dest']
+                        n.speed = ag['speed']
+                        n.pos = pos
+                        flag = False
+                        break
+                if flag:
+                    agent = Agent(ag['id'], ag['value'], ag['src'], ag['dest'], ag['speed'], pos)
+                    self.agents.append(agent)
+            return True
+        except:
+            return False
 
     def findEdge(self, pokPos: tuple, type_p: int):
         """
@@ -127,7 +137,7 @@ class Game:
 
                 if abs(distPokDest + distSrcPok) - sys.float_info.epsilon <= distSrcDest <= abs(
                         distPokDest + distSrcPok) + sys.float_info.epsilon:
-                    print('src:', src, 'dest: ', dest, 'type: ', type_p)
+                    # print('src:', src, 'dest: ', dest, 'type: ', type_p)
                     if (type_p > 0 and src.id < dest.id) or (src.id > dest.id and type_p < 0):
                         return src, dest
                     else:

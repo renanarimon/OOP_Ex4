@@ -2,6 +2,9 @@ import pygame
 
 
 class Pokemon:
+    """
+    this class represents an Pokemon Object
+    """
     def __init__(self, value: float, type: int, pos: tuple, id1: int):
         self.value = value
         self.type = type

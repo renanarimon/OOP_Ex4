@@ -2,6 +2,9 @@ import pygame
 
 
 class Agent:
+    """
+    this class represents an Agent Object
+    """
     def __init__(self, id1: int, value: float, src: int, dest: int, speed: float, pos: tuple):
         self.id = id1
         self.value = value

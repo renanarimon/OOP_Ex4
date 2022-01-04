@@ -1,9 +1,6 @@
-"""
-@author AchiyaZigi
-OOP - Ex4
-Very simple GUI example for python client to communicates with the server and "play the game!"
-"""
 import sys
+import time
+
 import pygame_gui
 
 from pokemonGame.Game import Game
@@ -13,21 +10,21 @@ from client import Client
 from pygame import gfxdraw
 import pygame
 from pygame import *
-import threading
+import time
+"""
+run game class using pygame
+"""
 
 # init pygame
 
 WIDTH, HEIGHT = 1080, 720
-gray = Color(64, 64, 64)
-blue = Color(6, 187, 193)
-yellow = Color(255, 255, 102)
 black = Color(0, 0, 0)
-white = Color(255, 255, 255)
 r = 5
 # default port
 PORT = 6666
 # server host (default localhost 127.0.0.1)
 HOST = '127.0.0.1'
+
 pygame.init()
 bg = pygame.image.load("../images/backgruond.jpg")
 screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=HWSURFACE | DOUBLEBUF | RESIZABLE)
@@ -40,12 +37,19 @@ pygame.font.init()
 client = Client()
 client.start_connection(HOST, PORT)
 
+clock10 = pygame.time.Clock()
+
+time_counter = time.time()
+move_counter = 0
 game = Game(client.get_info())
 graph = game.graph
 
 # FONT = pygame.font.SysFont('Arial', 20, bold=True)
 fontTimer = pygame.font.SysFont("comicsansms", 60)
+fontScore = pygame.font.SysFont("comicsansms", 20)
 fontNodeId = pygame.font.SysFont('chalkduster.ttf', 30)
+font = pygame.font.SysFont('chalkduster.ttf', 20)
+
 
 manager = pygame_gui.UIManager((WIDTH, HEIGHT))
 btnStop = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen.get_width() - 100, 0), (115, 40)),
@@ -113,24 +117,22 @@ def drawOneEdge(src: Node, dest: Node, color: Color):
     pygame.draw.line(screen, color, (src_x, src_y), (dest_x, dest_y))
 
 
-"""
-The function assigns each Agent the best Pokemon according to the following criteria:
-    1. The shortest path (in terms of weight)
-    2. Pokemon value
-
-The function is Bijection: each Agent has one Pokemon adapted at each iteration and vice versa.
-** update agent.orderList with new path **
-"""
-
-
 def pickPok2Agent():
+    """
+    The function assigns each Agent the best Pokemon according to the following criteria:
+        1. The shortest path (in terms of weight)
+        2. Pokemon value
+
+    The function is Bijection: each Agent has one Pokemon adapted at each iteration and vice versa.
+    ** update agent.orderList with new path **
+    """
     for agent in game.agents:
         if agent.src == agent.lastDest or len(agent.orderList) == 0:
             v = -sys.maxsize
             bestPok = Pokemon(0.0, 0, (0.0, 0.0, 0.0), 0)
             for pok in game.pokemons:
                 if not pok.took:
-                    src1, dest1 = game.findEdge(graph, pok.pos, pok.type)
+                    src1, dest1 = game.findEdge(pok.pos, pok.type)
                     agent.lastDest = dest1.id
                     if agent.src == src1.id:
                         w, lst = game.shortest_path(src1.id, dest1.id)
@@ -161,6 +163,7 @@ while game is running:
 """
 
 while client.is_running() == 'true':
+    time.sleep(0.1)
     time_delta = clock.tick(60) / 1000.0
 
     # load & scale pokemons
@@ -196,8 +199,18 @@ while client.is_running() == 'true':
     fake_screen.blit(bg, (0, 0))
     screen.blit(pygame.transform.scale(fake_screen, screen.get_rect().size), (0, 0))
     manager.draw_ui(screen)
-    timer = fontTimer.render(client.time_to_end(), True, black)
+    timerStr = "time to end: "
+    try:
+        timerStr += client.time_to_end()
+    except:
+        timerStr += "0"
+    timer = fontScore.render(timerStr, True, black)
     screen.blit(timer, (0, 0))
+
+    # st = "score: "
+    # st += str(game.grade)
+    # sc = fontScore.render(st, True, black)
+    # screen.blit(sc, (200,0))
 
     # draw graph
     for n in graph.nodes.values():
@@ -211,7 +224,10 @@ while client.is_running() == 'true':
         image = agent.image
         rect = image.get_rect()
         rect.center = (agent.pos[0], agent.pos[1])
+        agentId = font.render(str(agent.id), True, black)
+        # rect = id_srf.get_rect(topright=(x - 10, y - 10))
         screen.blit(image, rect)
+        screen.blit(agentId, rect)
 
     # draw pokemons
     for p in game.pokemons:
@@ -221,7 +237,9 @@ while client.is_running() == 'true':
             image = p.image_D
         rect = image.get_rect()
         rect.center = (p.posScale[0], p.posScale[1])
+        pokVal = font.render(str(p.value), True, black)
         screen.blit(image, rect)
+        screen.blit(pokVal, rect)
     # update screen changes
     display.update()
 
@@ -233,10 +251,13 @@ while client.is_running() == 'true':
     # move each agent to the next node on the path to pokemon according to his current orderList
     for agent in game.agents:
         if agent.dest == -1:
-            nextNode = agent.orderList.pop(0)
-            client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
-            ttl = client.time_to_end()
-            print(ttl, client.get_info())
-        client.move()
+                nextNode = agent.orderList.pop(0)
+                print("next: ", nextNode)
+                print("agent: ", agent.id)
+                client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
+                ttl = client.time_to_end()
+                print(ttl, client.get_info())
+
+    client.move()
 
 # game over
