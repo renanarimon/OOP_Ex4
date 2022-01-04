@@ -12,7 +12,6 @@ from graph.DiGraph import DiGraph
 
 
 class Game:
-    # algoGraph = GraphAlgo()
 
     def __init__(self, json_str: str):
         self.INFINITY = INFINITY = math.inf

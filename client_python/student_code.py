@@ -13,6 +13,7 @@ from client import Client
 from pygame import gfxdraw
 import pygame
 from pygame import *
+import threading
 
 # init pygame
 
@@ -43,7 +44,7 @@ game = Game(client.get_info())
 graph = game.graph
 
 # FONT = pygame.font.SysFont('Arial', 20, bold=True)
-fontTimer = pygame.font.SysFont("comicsansms", 72)
+fontTimer = pygame.font.SysFont("comicsansms", 60)
 fontNodeId = pygame.font.SysFont('chalkduster.ttf', 30)
 
 manager = pygame_gui.UIManager((WIDTH, HEIGHT))
@@ -113,9 +114,50 @@ def drawOneEdge(src: Node, dest: Node, color: Color):
 
 
 """
+The function assigns each Agent the best Pokemon according to the following criteria:
+    1. The shortest path (in terms of weight)
+    2. Pokemon value
+
+The function is Bijection: each Agent has one Pokemon adapted at each iteration and vice versa.
+** update agent.orderList with new path **
+"""
+
+
+def pickPok2Agent():
+    for agent in game.agents:
+        if agent.src == agent.lastDest or len(agent.orderList) == 0:
+            v = -sys.maxsize
+            bestPok = Pokemon(0.0, 0, (0.0, 0.0, 0.0), 0)
+            for pok in game.pokemons:
+                if not pok.took:
+                    src1, dest1 = game.findEdge(graph, pok.pos, pok.type)
+                    agent.lastDest = dest1.id
+                    if agent.src == src1.id:
+                        w, lst = game.shortest_path(src1.id, dest1.id)
+                    elif agent.src == dest1.id:
+                        lst = [src1.id, dest1.id]
+                        bestPok = pok
+                        agent.orderList = lst
+                        break
+                    else:
+                        w, lst = game.threeShortestPath(agent.src, src1.id, dest1.id)
+
+                    lst.pop(0)
+                    if (pok.value - w) > v:
+                        v = pok.value - w
+                        bestPok = pok
+                        agent.orderList = lst
+
+            bestPok.took = True
+
+
+"""
 while game is running:
     1. load & scale pokemons
     2. load & scale agents
+    3. handle events
+    4. draw: graph, agents, pokemons
+    5. pickPok2Agent()
 """
 
 while client.is_running() == 'true':
@@ -157,7 +199,7 @@ while client.is_running() == 'true':
     timer = fontTimer.render(client.time_to_end(), True, black)
     screen.blit(timer, (0, 0))
 
-    # draw nodes
+    # draw graph
     for n in graph.nodes.values():
         drawNode(n)
         for e in graph.all_out_edges_of_node(n.id):
@@ -171,8 +213,8 @@ while client.is_running() == 'true':
         rect.center = (agent.pos[0], agent.pos[1])
         screen.blit(image, rect)
 
+    # draw pokemons
     for p in game.pokemons:
-        # print(p.pos)
         if p.type > 0:
             image = p.image_U
         else:
@@ -186,55 +228,15 @@ while client.is_running() == 'true':
     # refresh rate
     clock.tick(60)
 
-    for agent in game.agents:
-        # print("****",agent.src , agent.lastDest)
-        if agent.src == agent.lastDest or len(agent.orderList) == 0:
-            # print("inside")
-            v = -sys.maxsize
-            bestPok = Pokemon(0.0, 0, (0.0, 0.0, 0.0), 0)
-            for pok in game.pokemons:
-                if not pok.took:
-                    src1, dest1 = game.findEdge(graph, pok.pos, pok.type)
-                    agent.lastDest = dest1.id
-                    print("src1, dest1:", src1, dest1)
-                    # print([agent.src, src1.id, dest1.id])
-                    if agent.src == src1.id:
-                        w, lst = game.shortest_path(src1.id, dest1.id)
-                        # l = [src1.id, dest1.id]
-                    elif agent.src == dest1.id:
-                        lst = [src1.id, dest1.id]
-                        bestPok = pok
-                        agent.orderList = lst
-                        # print("lst elif:",lst)
-                        break
-                    else:
-                        w, lst = game.threeShortestPath(agent.src, src1.id, dest1.id)
-                        # l = [agent.src, src1.id, dest1.id]
+    pickPok2Agent()
 
-                    # print("l: ",l)
-
-                    # lst, w = game.TSP(l)
-                    # print("tsp: ", lst)
-                    lst.pop(0)
-                    # print("after pop: ", lst)
-                    if (pok.value - w) > v:
-                        v = pok.value - w
-                        bestPok = pok
-                        agent.orderList = lst
-                # else:
-            # game.pokemons.remove(bestPok)
-            bestPok.took = True
-
+    # move each agent to the next node on the path to pokemon according to his current orderList
     for agent in game.agents:
         if agent.dest == -1:
-            # if len(agent.orderList)>0:
-            print(agent.orderList)
             nextNode = agent.orderList.pop(0)
-
-            # print('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
             client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
             ttl = client.time_to_end()
             print(ttl, client.get_info())
         client.move()
 
-# game over:
+# game over
