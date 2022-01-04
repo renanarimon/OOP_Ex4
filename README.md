@@ -26,11 +26,11 @@ The function is Bijection: each Agent has one Pokemon adapted at each iteration 
 this algotithm create to each agant a list of node he need to pass in order,the last two nodes are the srs and dest of the pokemon's edge. <br />
 
 <img width="137" alt="image" src="https://user-images.githubusercontent.com/77111035/148041790-bff44a6b-bd4e-4ee9-ae47-e46911e31bba.png">
-### agant:
-contains : id, speed, value, src, dest, pos
-### pokimon:
-contains : pos, value, type (If he is on the edge descending or ascending)
-### Game:
+### agant: <br />
+contains : id, speed, value, src, dest, pos <br />
+### pokimon: <br />
+contains : pos, value, type (If he is on the edge descending or ascending) <br />
+### Game: <br />
 contains : the all info of the game (load as Json file), has the graph (Digraph)<br />
 #### Main function : <br />
 - shortestPath(): <br />
