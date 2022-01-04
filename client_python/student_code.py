@@ -1,3 +1,4 @@
+import json
 import sys
 import time
 
@@ -11,6 +12,7 @@ from pygame import gfxdraw
 import pygame
 from pygame import *
 import time
+from types import SimpleNamespace
 """
 run game class using pygame
 """
@@ -163,7 +165,8 @@ while game is running:
 """
 
 while client.is_running() == 'true':
-    time.sleep(0.1)
+    # time.sleep(0.1)
+    inf = json.loads(client.get_info(), object_hook = lambda d: SimpleNamespace(**d)).GameServer
     time_delta = clock.tick(60) / 1000.0
 
     # load & scale pokemons
@@ -249,15 +252,18 @@ while client.is_running() == 'true':
     pickPok2Agent()
 
     # move each agent to the next node on the path to pokemon according to his current orderList
+    flag = True
     for agent in game.agents:
         if agent.dest == -1:
-                nextNode = agent.orderList.pop(0)
-                print("next: ", nextNode)
-                print("agent: ", agent.id)
-                client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
-                ttl = client.time_to_end()
-                print(ttl, client.get_info())
+            flag = False
+            nextNode = agent.orderList.pop(0)
+            print("next: ", nextNode)
+            print("agent: ", agent.id)
+            client.choose_next_edge('{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(nextNode) + '}')
+            ttl = client.time_to_end()
+            print(ttl, client.get_info())
 
-    client.move()
+    if inf.moves/(time.time() - time_counter) < 10 and flag:
+        client.move()
 
 # game over
