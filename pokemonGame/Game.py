@@ -110,14 +110,14 @@ class Game:
                 agent = Agent(ag['id'], ag['value'], ag['src'], ag['dest'], ag['speed'], pos)
                 self.agents.append(agent)
 
-    def findEdge(self, graph: DiGraph, pokPos: tuple, type_p: int):
+    def findEdge(self, pokPos: tuple, type_p: int):
         """
         Finds the edge the Pokemon is on,
         By calculating distances and by type
         """
-        for src in graph.nodes.values():
-            for e in graph.all_out_edges_of_node(src.id):
-                dest = graph.nodes.get(e)
+        for src in self.graph.nodes.values():
+            for e in self.graph.all_out_edges_of_node(src.id):
+                dest = self.graph.nodes.get(e)
                 s = np.array(src.pos)
                 d = np.array(dest.pos)
                 p = np.array(pokPos)
