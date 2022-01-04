@@ -37,7 +37,8 @@ this unction find the shortest path between to nodes on the graph by the Dijkstr
 - load_agents() , load_pokemon() :  <br />
   create a agant and pokemon from Json format <br />
 - findEdge() :<br />
-  this tunction finds the src and dest of a given pokemon's edge. calculate distants two point and checking if : (dest pos) =< (pokemin pos) =< (src pos) <br />
+  this tunction finds the src and dest of a given pokemon's edge. calculate distants two point and checking if : <br />
+  (dest pos) =< (pokemin pos) =< (src pos) <br />
 We took the samo implement of : [OOP_Ex3](https://github.com/taliyashitreet/OOP_Ex3)
 # How To Run
 - in the terminal: java -jar Ex4_Server_v0.0.jar 0 (instead of 0 put any level you want to run)
