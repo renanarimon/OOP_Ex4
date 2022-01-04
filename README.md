@@ -1,4 +1,3 @@
-
 ![pokemon](https://user-images.githubusercontent.com/77111035/148031517-120da067-3d9b-412a-b3a5-6341ee62a560.gif)
 # Pokemon Game Ex4
 this is the fourth assignment in the OOP course, ariel univerisy. In this assignment we should have to crate a pokemon game wich consists of some of Agants (Pokabolls)
@@ -44,18 +43,3 @@ We took the samo implement of : [OOP_Ex3](https://github.com/taliyashitreet/OOP_
 # How To Run
 - in the terminal: java -jar Ex4_Server_v0.0.jar 0 (instead of 0 put any level you want to run)
 - run the "student_code" at the project
-
-
-
-
-
-
- 
- 
- 
-
-
-
-
-
-
