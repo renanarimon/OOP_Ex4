@@ -42,5 +42,5 @@ this unction find the shortest path between to nodes on the graph by the Dijkstr
 **DiGraph**  <br />
 We took the same implement of : [OOP_Ex3](https://github.com/taliyashitreet/OOP_Ex3)
 # How To Run
-- in the terminal: java -jar Ex4_Server_v0.0.jar 0 (instead of 0 put any level you want to run)
+- in the terminal: __<java -jar Ex4_Server_v0.0.jar 0>__ (instead of 0 put any level you want to run)
 - run the "student_code" at the project
