@@ -29,6 +29,11 @@ the main class contains the GUI, represent the graph, pokemons and agants. <br /
 contains : id, speed, value, src, dest, pos  <br />
 **pokimon:**  <br />
 contains : pos, value, type (If he is on the edge descending or ascending)   <br />
+pokemon of type -1:
+![image](https://user-images.githubusercontent.com/77111035/148059918-c4a8af4d-3757-4b98-b7e7-13b5728a9f5a.png)
+pokemon for type 1:
+![image](https://user-images.githubusercontent.com/77111035/148059965-2d6eae9a-3937-45f8-83e6-0e19a8bab782.png)
+
 **Game:**  <br />
 contains : the all info of the game (load as Json file), has the graph (Digraph)  <br />
 ***Main function :***  <br />
