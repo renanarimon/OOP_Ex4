@@ -7,7 +7,7 @@ In addition each agant has a speed - As much as he will eat more pokemon his spe
 # This assignment was written by
  [Taliya Shitreet](https://github.com/taliyashitreet "Profile") and  [Renana Rimon](https://github.com/renanarimon "Profile")
  # Our game look like:
- ![image](https://user-images.githubusercontent.com/77111035/148042934-cfc27add-ac10-4940-b0cb-f5538182ee53.png)
+ ![image](https://user-images.githubusercontent.com/77155986/148064039-d6e8ae69-1703-446d-b4c4-e24ee1fb6019.png)
 
  
 # pakeges: 
