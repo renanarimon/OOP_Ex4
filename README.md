@@ -39,7 +39,8 @@ this unction find the shortest path between to nodes on the graph by the Dijkstr
 - findEdge() :<br />
   this tunction finds the src and dest of a given pokemon's edge. calculate distants two point and checking if : <br />
   (dest pos) =< (pokemin pos) =< (src pos) <br />
-We took the samo implement of : [OOP_Ex3](https://github.com/taliyashitreet/OOP_Ex3)
+**DiGraph**  <br />
+We took the same implement of : [OOP_Ex3](https://github.com/taliyashitreet/OOP_Ex3)
 # How To Run
 - in the terminal: java -jar Ex4_Server_v0.0.jar 0 (instead of 0 put any level you want to run)
 - run the "student_code" at the project
