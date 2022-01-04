@@ -5,7 +5,12 @@ this is the fourth assignment in the OOP course, ariel univerisy. In this assign
 that shuld capture as much as possible Pokemons in limited time. each Pokemon has a value, so the agant will prefer to cath the most worth pokemon at any time.
 In addition each agant has a speed - As much as he will eat more pokemon his speed will be increased.
 
-### This assignment was written by
+## This assignment was written by
+ [Taliya Shitreet](https://github.com/taliyashitreet "Profile") and  [Renana Rimon](https://github.com/renanarimon "Profile")
+ 
+ ## URL
+ 
+ 
 
 
 
