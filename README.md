@@ -13,10 +13,10 @@ In addition each agant has a speed - As much as he will eat more pokemon his spe
 # pakeges: 
 ![image](https://user-images.githubusercontent.com/77111035/148047663-434ce3f6-d5c2-42a5-a4dc-9e87362d4deb.png)
 
-**client:**
-doesnt written by us, this class activate the server 
-**student_code:**
-the main class contains the GUI, represent the graph, pokemons and agants.
+**client:**  <br />
+doesnt written by us, this class activate the server  <br />
+**student_code:**  <br />
+the main class contains the GUI, represent the graph, pokemons and agants. <br />
 - Main Functions: <br />
 - pickPok2Agent() : this function represents the algorithm of the game and assigns each Agent the best Pokemon according to the following criteria:<br />
   1. The shortest path (in terms of weight) <br />
@@ -25,13 +25,13 @@ the main class contains the GUI, represent the graph, pokemons and agants.
   The function is Bijection: each Agent has one Pokemon adapted at each iteration and vice versa. <br />
   this algotithm create to each agant a list of node he need to pass in order,the last two nodes are the srs and dest of the pokemon's edge. <br />
 
-**agant:** 
-contains : id, speed, value, src, dest, pos
-**pokimon:** 
-contains : pos, value, type (If he is on the edge descending or ascending) 
-**Game:** 
-contains : the all info of the game (load as Json file), has the graph (Digraph)
-***Main function :*** 
+**agant:**  <br />
+contains : id, speed, value, src, dest, pos  <br />
+**pokimon:**  <br />
+contains : pos, value, type (If he is on the edge descending or ascending)   <br />
+**Game:**  <br />
+contains : the all info of the game (load as Json file), has the graph (Digraph)  <br />
+***Main function :***  <br />
 - shortestPath(): <br />
 this unction find the shortest path between to nodes on the graph by the Dijkstra's algorithm [Dijkstra](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) 
 - load_agents() , load_pokemon() :  <br />
