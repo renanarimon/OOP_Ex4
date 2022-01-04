@@ -1,4 +1,4 @@
 # Pokemon Game
-![image](https://user-images.githubusercontent.com/77111035/148031267-d52aae14-9ecf-41ea-b733-77a03ee40ac5.png)
+![Pokemon-logo](https://user-images.githubusercontent.com/77111035/148031447-d1f0a9d0-a146-49f4-9932-aadeccb53156.gif)
 
 
