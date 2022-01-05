@@ -4,6 +4,7 @@ import time
 
 import pygame_gui
 
+from pokemonGame.Agent import Agent
 from pokemonGame.Game import Game
 from pokemonGame.Pokimon import Pokemon
 from graph.DiGraph import DiGraph, Node
@@ -13,6 +14,7 @@ import pygame
 from pygame import *
 import time
 from types import SimpleNamespace
+
 """
 run game class using pygame
 """
@@ -51,7 +53,6 @@ fontTimer = pygame.font.SysFont("comicsansms", 60)
 fontScore = pygame.font.SysFont("comicsansms", 20)
 fontNodeId = pygame.font.SysFont('chalkduster.ttf', 30)
 font = pygame.font.SysFont('chalkduster.ttf', 20)
-
 
 manager = pygame_gui.UIManager((WIDTH, HEIGHT))
 btnStop = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen.get_width() - 100, 0), (115, 40)),
@@ -166,7 +167,7 @@ while game is running:
 
 while client.is_running() == 'true':
     # time.sleep(0.1)
-    inf = json.loads(client.get_info(), object_hook = lambda d: SimpleNamespace(**d)).GameServer
+    inf = json.loads(client.get_info(), object_hook=lambda d: SimpleNamespace(**d)).GameServer
     time_delta = clock.tick(60) / 1000.0
 
     # load & scale pokemons
@@ -263,7 +264,7 @@ while client.is_running() == 'true':
             ttl = client.time_to_end()
             print(ttl, client.get_info())
 
-    if inf.moves/(time.time() - time_counter) < 10 and flag:
+    if inf.moves / (time.time() - time_counter) < 10 and flag:
         client.move()
 
 # game over

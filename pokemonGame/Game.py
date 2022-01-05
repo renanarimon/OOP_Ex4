@@ -39,7 +39,7 @@ class Game:
         self.load_from_json("../" + self.graph_json)
         self.size = self.graph.v_size()
         self.currDest = 0
-        self.score=0
+        self.score = 0
 
     def load_from_json(self, file_name: str) -> bool:
         try:
@@ -202,24 +202,31 @@ class Game:
         :param id1, id2
         :return list of nodes path
         """
-        self.dijkstra(id1, id2)
-        weightAns = self.graph.nodes[id2].weight
-        listAns = []
-        curr = id2
-        listAns, weight = self.findParentPath(curr, weightAns, listAns)
-        if weightAns != math.inf:
-            listAns.append(id1)
-            listAns.reverse()
-        return weightAns, listAns
+        if id1 in self.graph.nodes.keys() and id2 in self.graph.nodes.keys():
+            self.dijkstra(id1, id2)
+            weightAns = self.graph.nodes[id2].weight
+            listAns = []
+            curr = id2
+            listAns, weight = self.findParentPath(curr, weightAns, listAns)
+            if weightAns != math.inf:
+                listAns.append(id1)
+                listAns.reverse()
+            return weightAns, listAns
+        else:
+            return "node not exist"
 
     def threeShortestPath(self, id1: int, id2: int, id3: int) -> (float, list):
         """
         calculate shortest path between 3 nodes
         @return: weight, path
         """
-        w, ans = self.shortest_path(id1, id2)
-        w1, ans1 = self.shortest_path(id2, id3)
-        ans1.pop(0)
-        w += w1
-        ans.extend(ans1)
-        return w, ans
+        if id1 in self.graph.nodes.keys() and id2 \
+                in self.graph.nodes.keys() and id3 in self.graph.nodes.keys():
+            w, ans = self.shortest_path(id1, id2)
+            w1, ans1 = self.shortest_path(id2, id3)
+            ans1.pop(0)
+            w += w1
+            ans.extend(ans1)
+            return w, ans
+        else:
+            return "node not exist"
