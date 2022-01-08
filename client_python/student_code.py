@@ -267,4 +267,5 @@ while client.is_running() == 'true':
     if inf.moves / (time.time() - time_counter) < 10 and flag:
         client.move()
 
+client.stop_connection()
 # game over
